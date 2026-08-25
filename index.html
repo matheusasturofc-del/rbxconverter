@@ -55,7 +55,7 @@
     border-radius: 12px;
     padding: 4px;
     gap: 4px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
   .toggle button {
     flex: 1;
@@ -74,29 +74,49 @@
     background: var(--toggle-active);
     color: var(--text);
   }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
   label {
     display: block;
     font-size: 13px;
     color: var(--text-dim);
     margin-bottom: 8px;
   }
-  input {
+  input, select {
     width: 100%;
     background: #0d1424;
     border: 1px solid var(--card-border);
     border-radius: 12px;
     color: var(--text);
+    outline: none;
+    font-family: inherit;
+  }
+  input {
     font-size: 24px;
     font-weight: 600;
     padding: 14px 16px;
-    outline: none;
   }
-  input:focus { border-color: #35447a; }
+  input:focus, select:focus { border-color: #35447a; }
+  select {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 32px 10px 14px;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0 L5 6 L10 0' fill='none' stroke='%237c88a6' stroke-width='1.5'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+  }
   .results {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    margin-top: 24px;
+    margin-top: 20px;
   }
   .result {
     border-radius: 14px;
@@ -117,7 +137,7 @@
   .devex .tag { background: var(--devex); color: #06180f; }
   .mercado .tag { background: var(--mercado); color: #06122c; }
   .value {
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 700;
   }
   .devex .value { color: var(--devex); }
@@ -138,12 +158,20 @@
 <body>
 
 <div class="card">
-  <h1>Robux <span>⇄</span> Real</h1>
+  <h1>Robux <span>⇄</span> Dinheiro</h1>
 
   <div class="toggle">
-    <button id="btnR2B" class="active">Robux → Real</button>
-    <button id="btnB2R">Real → Robux</button>
+    <button id="btnR2M" class="active">Robux → Dinheiro</button>
+    <button id="btnM2R">Dinheiro → Robux</button>
   </div>
+
+  <label for="currency">Moeda</label>
+  <select id="currency">
+    <option value="BRL" selected>Real (BRL)</option>
+    <option value="USD">Dólar (USD)</option>
+  </select>
+
+  <div style="height:16px"></div>
 
   <label id="inputLabel" for="amount">Quantidade de Robux</label>
   <input id="amount" type="number" min="0" value="1000" inputmode="decimal">
@@ -169,48 +197,69 @@
   const RATE_MERCADO = 0.0125;
   const USD_BRL = 5.15;
 
-  let mode = 'r2b';
+  let mode = 'r2m';
 
   const amount = document.getElementById('amount');
   const inputLabel = document.getElementById('inputLabel');
+  const currency = document.getElementById('currency');
   const valDevex = document.getElementById('valDevex');
   const valMercado = document.getElementById('valMercado');
-  const btnR2B = document.getElementById('btnR2B');
-  const btnB2R = document.getElementById('btnB2R');
+  const btnR2M = document.getElementById('btnR2M');
+  const btnM2R = document.getElementById('btnM2R');
 
-  function formatBRL(v) {
-    return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  function formatMoney(v, cur) {
+    if (cur === 'BRL') {
+      return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+    return v.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
   }
   function formatRobux(v) {
     return Math.round(v).toLocaleString('pt-BR') + ' Robux';
   }
 
+  function updateLabel() {
+    if (mode === 'r2m') {
+      inputLabel.textContent = 'Quantidade de Robux';
+    } else {
+      inputLabel.textContent = currency.value === 'BRL' ? 'Valor em Reais (R$)' : 'Valor em Dólares (US$)';
+    }
+  }
+
   function setMode(m) {
     mode = m;
-    btnR2B.classList.toggle('active', m === 'r2b');
-    btnB2R.classList.toggle('active', m === 'b2r');
-    inputLabel.textContent = m === 'r2b' ? 'Quantidade de Robux' : 'Valor em Reais (R$)';
+    btnR2M.classList.toggle('active', m === 'r2m');
+    btnM2R.classList.toggle('active', m === 'm2r');
+    updateLabel();
     calc();
   }
 
   function calc() {
     const v = parseFloat(amount.value) || 0;
+    const cur = currency.value;
 
-    if (mode === 'r2b') {
-      valDevex.textContent = formatBRL(v * RATE_DEVEX * USD_BRL);
-      valMercado.textContent = formatBRL(v * RATE_MERCADO * USD_BRL);
+    if (mode === 'r2m') {
+      const usdDevex = v * RATE_DEVEX;
+      const usdMercado = v * RATE_MERCADO;
+      if (cur === 'BRL') {
+        valDevex.textContent = formatMoney(usdDevex * USD_BRL, 'BRL');
+        valMercado.textContent = formatMoney(usdMercado * USD_BRL, 'BRL');
+      } else {
+        valDevex.textContent = formatMoney(usdDevex, 'USD');
+        valMercado.textContent = formatMoney(usdMercado, 'USD');
+      }
     } else {
-      const usd = v / USD_BRL;
-      valDevex.textContent = formatRobux(usd / RATE_DEVEX);
-      valMercado.textContent = formatRobux(usd / RATE_MERCADO);
+      const usdValue = cur === 'BRL' ? v / USD_BRL : v;
+      valDevex.textContent = formatRobux(usdValue / RATE_DEVEX);
+      valMercado.textContent = formatRobux(usdValue / RATE_MERCADO);
     }
   }
 
-  btnR2B.addEventListener('click', () => setMode('r2b'));
-  btnB2R.addEventListener('click', () => setMode('b2r'));
+  btnR2M.addEventListener('click', () => setMode('r2m'));
+  btnM2R.addEventListener('click', () => setMode('m2r'));
   amount.addEventListener('input', calc);
+  currency.addEventListener('change', () => { updateLabel(); calc(); });
 
-  setMode('r2b');
+  setMode('r2m');
 </script>
 
 </body>
