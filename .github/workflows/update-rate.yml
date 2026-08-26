@@ -1,0 +1,36 @@
+name: Atualiza cotação USD/BRL
+
+on:
+  schedule:
+    - cron: '0 3 * * *'   # 00:00 no horário de São Paulo (UTC-3)
+  workflow_dispatch: {}    # permite rodar manualmente pela aba Actions
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Buscar cotação e atualizar index.html
+        run: |
+          set -e
+          RATE=$(curl -s "https://api.frankfurter.dev/v1/latest?from=USD&to=BRL" | python3 -c "import json,sys; print(f\"{json.load(sys.stdin)['rates']['BRL']:.2f}\")")
+          RATE_BR=$(echo "$RATE" | tr '.' ',')
+
+          sed -i "s/const USD_BRL = [0-9.]*;/const USD_BRL = ${RATE};/" index.html
+          sed -i "s/\$1 = R\$[0-9,]*<\/div>/\$1 = R\$${RATE_BR}<\/div>/" index.html
+
+          git config user.name "RobuxConvert Bot"
+          git config user.email "bot@robuxconvert.local"
+          git add index.html
+
+          if git diff --cached --quiet; then
+            echo "Cotação sem mudança, nada para commitar."
+            exit 0
+          fi
+
+          git commit -m "Atualiza cotação USD/BRL para ${RATE} - $(date -u +%F)"
+          git push
