@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AethelHost — Servidores VPS</title>
+<meta name="description" content="AethelHost: servidores VPS rápidos, com SSD NVMe, proteção DDoS e suporte em português.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0d18'/%3E%3Cpath d='M32 10 L52 52 H42 L32 30 L22 52 H12 Z' fill='%238b7bff'/%3E%3Crect x='24' y='40' width='16' height='5' rx='2' fill='%2336d7c4'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #0a0d18;
+    --bg-alt: #0e1222;
+    --card: #131831;
+    --card-border: #232a4d;
+    --text: #eef0fa;
+    --text-dim: #8b93b8;
+    --accent: #8b7bff;
+    --accent-2: #36d7c4;
+    --accent-bg: #1b1740;
+    --ok: #36d7a0;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+    line-height: 1.55;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+  /* Navegação */
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(10, 13, 24, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--card-border);
+  }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; letter-spacing: -0.01em; }
+  .logo svg { width: 30px; height: 30px; }
+  .logo span { color: var(--accent); }
+  .links { display: flex; gap: 28px; font-size: 14px; color: var(--text-dim); }
+  .links a:hover { color: var(--text); }
+  .btn {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform .15s, background .15s;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-primary { background: var(--accent); color: #0a0d18; }
+  .btn-primary:hover { background: #9d8fff; }
+  .btn-ghost { border-color: var(--card-border); color: var(--text); }
+  .btn-ghost:hover { background: var(--card); }
+
+  /* Hero */
+  .hero { padding: 88px 0 72px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before {
+    content: ""; position: absolute; inset: -40% 10% auto; height: 520px;
+    background: radial-gradient(closest-side, rgba(139,123,255,.22), transparent);
+    pointer-events: none;
+  }
+  .status {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--text-dim);
+    background: var(--card); border: 1px solid var(--card-border);
+    padding: 6px 14px; border-radius: 999px; margin-bottom: 24px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 0 rgba(54,215,160,.6); animation: pulse 2s infinite; }
+  @keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(54,215,160,0); } 100% { box-shadow: 0 0 0 0 rgba(54,215,160,0); } }
+  .hero h1 { font-size: clamp(34px, 6vw, 60px); line-height: 1.08; margin: 0 0 18px; letter-spacing: -0.03em; position: relative; }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p { font-size: 18px; color: var(--text-dim); max-width: 620px; margin: 0 auto 32px; position: relative; }
+  .hero .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 56px; position: relative; }
+  .stat { background: var(--card); border: 1px solid var(--card-border); border-radius: 14px; padding: 18px; }
+  .stat b { display: block; font-size: 24px; letter-spacing: -0.02em; }
+  .stat small { color: var(--text-dim); font-size: 13px; }
+
+  section { padding: 72px 0; }
+  section.alt { background: var(--bg-alt); border-top: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border); }
+  .head { text-align: center; margin-bottom: 40px; }
+  .head h2 { font-size: clamp(26px, 4vw, 36px); margin: 0 0 10px; letter-spacing: -0.02em; }
+  .head p { color: var(--text-dim); margin: 0; }
+
+  /* Planos */
+  .billing {
+    display: inline-flex; background: var(--card); border: 1px solid var(--card-border);
+    border-radius: 12px; padding: 4px; gap: 4px; margin-top: 20px;
+  }
+  .billing button {
+    background: none; border: 0; color: var(--text-dim); font: inherit; font-size: 14px;
+    padding: 8px 16px; border-radius: 9px; cursor: pointer;
+  }
+  .billing button.active { background: var(--accent-bg); color: var(--text); }
+  .billing .save { color: var(--accent-2); font-size: 12px; margin-left: 4px; }
+  .plans { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .plan {
+    background: var(--card); border: 1px solid var(--card-border); border-radius: 18px;
+    padding: 26px; display: flex; flex-direction: column; position: relative;
+  }
+  .plan.featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 20px 50px -20px rgba(139,123,255,.45); }
+  .badge {
+    position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: #0a0d18; font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 999px; letter-spacing: .04em; text-transform: uppercase;
+  }
+  .plan h3 { margin: 0 0 4px; font-size: 18px; }
+  .plan .sub { color: var(--text-dim); font-size: 13px; margin-bottom: 18px; }
+  .price { font-size: 36px; font-weight: 700; letter-spacing: -0.03em; }
+  .price small { font-size: 14px; color: var(--text-dim); font-weight: 400; }
+  .plan ul { list-style: none; padding: 0; margin: 20px 0 24px; font-size: 14px; flex: 1; }
+  .plan li { padding: 7px 0; border-bottom: 1px dashed var(--card-border); display: flex; gap: 8px; }
+  .plan li::before { content: "✓"; color: var(--accent-2); font-weight: 700; }
+  .plan .btn { text-align: center; }
+
+  /* Recursos */
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .feature { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; }
+  .feature .ico {
+    width: 42px; height: 42px; border-radius: 11px; background: var(--accent-bg);
+    display: grid; place-items: center; font-size: 20px; margin-bottom: 14px;
+  }
+  .feature h3 { margin: 0 0 6px; font-size: 17px; }
+  .feature p { margin: 0; color: var(--text-dim); font-size: 14px; }
+
+  /* Locais */
+  .locations { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .loc { background: var(--card); border: 1px solid var(--card-border); border-radius: 14px; padding: 18px; }
+  .loc b { display: block; }
+  .loc small { color: var(--text-dim); }
+  .loc .ping { float: right; color: var(--ok); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+  /* FAQ */
+  .faq { max-width: 760px; margin: 0 auto; }
+  details { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px 20px; margin-bottom: 10px; }
+  summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: var(--accent); font-size: 20px; line-height: 1; }
+  details[open] summary::after { content: "−"; }
+  details p { color: var(--text-dim); margin: 12px 0 0; font-size: 15px; }
+
+  /* CTA final */
+  .final {
+    background: linear-gradient(135deg, var(--accent-bg), #0f2a33);
+    border: 1px solid var(--card-border); border-radius: 22px;
+    padding: 48px 28px; text-align: center;
+  }
+  .final h2 { margin: 0 0 10px; font-size: clamp(24px, 4vw, 34px); letter-spacing: -0.02em; }
+  .final p { color: var(--text-dim); margin: 0 0 24px; }
+
+  footer { border-top: 1px solid var(--card-border); padding: 32px 0; color: var(--text-dim); font-size: 13px; }
+  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+  @media (max-width: 960px) {
+    .plans { grid-template-columns: repeat(2, 1fr); }
+    .features { grid-template-columns: repeat(2, 1fr); }
+    .locations, .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 0 16px; }
+    .links { display: none; }
+    .plans, .features, .locations { grid-template-columns: 1fr; }
+    .hero { padding: 56px 0 48px; }
+    section { padding: 56px 0; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="#" class="logo">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#131831"/><path d="M32 10 L52 52 H42 L32 30 L22 52 H12 Z" fill="#8b7bff"/><rect x="24" y="40" width="16" height="5" rx="2" fill="#36d7c4"/></svg>
+      Aethel<span>Host</span>
+    </a>
+    <div class="links">
+      <a href="#planos">Planos</a>
+      <a href="#recursos">Recursos</a>
+      <a href="#locais">Locais</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a href="#planos" class="btn btn-primary">Contratar VPS</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="status"><span class="dot"></span> Todos os sistemas operacionais</div>
+    <h1>Servidores VPS <em>rápidos e estáveis</em><br>prontos em 60 segundos</h1>
+    <p>SSD NVMe, proteção DDoS inclusa, acesso root completo e suporte em português. Hospede sites, bots, APIs e servidores de jogos sem dor de cabeça.</p>
+    <div class="cta">
+      <a href="#planos" class="btn btn-primary">Ver planos</a>
+      <a href="#recursos" class="btn btn-ghost">Conhecer recursos</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>99,9%</b><small>Uptime garantido</small></div>
+      <div class="stat"><b>NVMe</b><small>Armazenamento Gen4</small></div>
+      <div class="stat"><b>10 Gbps</b><small>Porta de rede</small></div>
+      <div class="stat"><b>24/7</b><small>Suporte humano</small></div>
+    </div>
+  </div>
+</header>
+
+<section id="planos" class="alt">
+  <div class="wrap">
+    <div class="head">
+      <h2>Escolha seu plano VPS</h2>
+      <p>Sem taxa de instalação. Cancele quando quiser.</p>
+      <div class="billing" role="group" aria-label="Período de cobrança">
+        <button class="active" data-period="monthly">Mensal</button>
+        <button data-period="yearly">Anual <span class="save">-20%</span></button>
+      </div>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <h3>Aethel Start</h3>
+        <div class="sub">Para projetos pequenos e testes</div>
+        <div class="price" data-monthly="24.90">R$24,90<small>/mês</small></div>
+        <ul>
+          <li>1 vCPU</li>
+          <li>2 GB RAM</li>
+          <li>30 GB NVMe</li>
+          <li>1 TB de tráfego</li>
+          <li>1 IPv4 dedicado</li>
+        </ul>
+        <a href="#contato" class="btn btn-ghost">Contratar</a>
+      </div>
+      <div class="plan featured">
+        <div class="badge">Mais vendido</div>
+        <h3>Aethel Pro</h3>
+        <div class="sub">Sites, bots e APIs em produção</div>
+        <div class="price" data-monthly="49.90">R$49,90<small>/mês</small></div>
+        <ul>
+          <li>2 vCPU</li>
+          <li>4 GB RAM</li>
+          <li>80 GB NVMe</li>
+          <li>3 TB de tráfego</li>
+          <li>Backup semanal</li>
+        </ul>
+        <a href="#contato" class="btn btn-primary">Contratar</a>
+      </div>
+      <div class="plan">
+        <h3>Aethel Turbo</h3>
+        <div class="sub">Servidores de jogos e apps pesados</div>
+        <div class="price" data-monthly="99.90">R$99,90<small>/mês</small></div>
+        <ul>
+          <li>4 vCPU</li>
+          <li>8 GB RAM</li>
+          <li>160 GB NVMe</li>
+          <li>5 TB de tráfego</li>
+          <li>Backup diário</li>
+        </ul>
+        <a href="#contato" class="btn btn-ghost">Contratar</a>
+      </div>
+      <div class="plan">
+        <h3>Aethel Titan</h3>
+        <div class="sub">Alta performance para empresas</div>
+        <div class="price" data-monthly="199.90">R$199,90<small>/mês</small></div>
+        <ul>
+          <li>8 vCPU dedicadas</li>
+          <li>16 GB RAM</li>
+          <li>320 GB NVMe</li>
+          <li>Tráfego ilimitado</li>
+          <li>Suporte prioritário</li>
+        </ul>
+        <a href="#contato" class="btn btn-ghost">Contratar</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="recursos">
+  <div class="wrap">
+    <div class="head">
+      <h2>Tudo que seu servidor precisa</h2>
+      <p>Infraestrutura de ponta, sem letras miúdas.</p>
+    </div>
+    <div class="features">
+      <div class="feature"><div class="ico">⚡</div><h3>Deploy instantâneo</h3><p>Sua VPS fica online em menos de um minuto após a confirmação do pagamento.</p></div>
+      <div class="feature"><div class="ico">🛡️</div><h3>Proteção DDoS</h3><p>Mitigação automática de ataques em todas as camadas, sem custo extra.</p></div>
+      <div class="feature"><div class="ico">🔑</div><h3>Acesso root total</h3><p>Controle completo via SSH. Instale o que quiser, do seu jeito.</p></div>
+      <div class="feature"><div class="ico">🐧</div><h3>Vários sistemas</h3><p>Ubuntu, Debian, AlmaLinux, Rocky Linux e Windows Server em um clique.</p></div>
+      <div class="feature"><div class="ico">💾</div><h3>Snapshots e backups</h3><p>Crie pontos de restauração e volte no tempo quando precisar.</p></div>
+      <div class="feature"><div class="ico">📊</div><h3>Painel completo</h3><p>Ligue, desligue, reinstale e monitore CPU, RAM e rede em tempo real.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="locais" class="alt">
+  <div class="wrap">
+    <div class="head">
+      <h2>Datacenters</h2>
+      <p>Escolha o local mais próximo dos seus usuários.</p>
+    </div>
+    <div class="locations">
+      <div class="loc"><span class="ping">~8 ms</span><b>🇧🇷 São Paulo</b><small>Brasil</small></div>
+      <div class="loc"><span class="ping">~110 ms</span><b>🇺🇸 Miami</b><small>Estados Unidos</small></div>
+      <div class="loc"><span class="ping">~180 ms</span><b>🇩🇪 Frankfurt</b><small>Alemanha</small></div>
+      <div class="loc"><span class="ping">~190 ms</span><b>🇵🇹 Lisboa</b><small>Portugal</small></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="head">
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq">
+      <details><summary>Quanto tempo leva para minha VPS ficar pronta?</summary><p>Normalmente menos de 60 segundos após a confirmação do pagamento. Você recebe os dados de acesso por e-mail.</p></details>
+      <details><summary>Posso fazer upgrade do plano depois?</summary><p>Sim. O upgrade é feito pelo painel, sem perder dados, e você paga apenas a diferença proporcional.</p></details>
+      <details><summary>Quais formas de pagamento são aceitas?</summary><p>Pix, cartão de crédito e boleto bancário.</p></details>
+      <details><summary>Posso rodar servidor de jogo (Minecraft, FiveM etc.)?</summary><p>Pode. Recomendamos a partir do plano Aethel Turbo para servidores com muitos jogadores.</p></details>
+      <details><summary>Existe garantia de reembolso?</summary><p>Sim, 7 dias de garantia. Se não gostar, devolvemos o valor integral.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="contato">
+  <div class="wrap">
+    <div class="final">
+      <h2>Pronto para colocar seu projeto no ar?</h2>
+      <p>Fale com a equipe AethelHost e receba ajuda para escolher o plano ideal.</p>
+      <a href="mailto:contato@aethelhost.com" class="btn btn-primary">Falar com a equipe</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="year"></span> AethelHost. Todos os direitos reservados.</span>
+    <span>Servidores VPS • Brasil</span>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const fmt = v => 'R$' + v.toFixed(2).replace('.', ',');
+  const buttons = document.querySelectorAll('.billing button');
+  buttons.forEach(btn => btn.addEventListener('click', () => {
+    buttons.forEach(b => b.classList.toggle('active', b === btn));
+    const yearly = btn.dataset.period === 'yearly';
+    document.querySelectorAll('.price').forEach(el => {
+      const monthly = parseFloat(el.dataset.monthly);
+      const value = yearly ? monthly * 0.8 : monthly;
+      el.innerHTML = fmt(value) + '<small>/mês' + (yearly ? ', cobrado anualmente' : '') + '</small>';
+    });
+  }));
+</script>
+</body>
+</html>
